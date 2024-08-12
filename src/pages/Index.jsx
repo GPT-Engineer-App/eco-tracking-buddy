@@ -34,7 +34,7 @@ const Index = () => {
         <p className="text-xl text-gray-600">Monitor and reduce your carbon footprint</p>
       </header>
 
-      <Tabs defaultValue={activeTab} className="max-w-4xl mx-auto">
+      <Tabs value={activeTab} className="max-w-4xl mx-auto">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="dashboard" onClick={() => setActiveTab("dashboard")}>Dashboard</TabsTrigger>
           <TabsTrigger value="log" onClick={() => setActiveTab("log")}>Log Activity</TabsTrigger>
