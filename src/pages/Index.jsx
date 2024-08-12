@@ -4,17 +4,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Leaf } from 'lucide-react';
-
-const mockData = [
-  { date: '2023-01-01', footprint: 10 },
-  { date: '2023-02-01', footprint: 8 },
-  { date: '2023-03-01', footprint: 9 },
-  { date: '2023-04-01', footprint: 7 },
-  { date: '2023-05-01', footprint: 6 },
-];
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useUserData, useLogActivity, useSocialComparison, useChallenges } from '../lib/api';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const userId = "user123"; // Replace with actual user ID from authentication
+  const { data: userData, isLoading: isUserDataLoading } = useUserData(userId);
+  const { data: socialData, isLoading: isSocialDataLoading } = useSocialComparison(userId);
+  const { data: challengesData, isLoading: isChallengesLoading } = useChallenges();
+  const logActivity = useLogActivity();
+
+  const handleLogActivity = (activityData) => {
+    logActivity.mutate(activityData);
+  };
+
+  if (isUserDataLoading || isSocialDataLoading || isChallengesLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -40,7 +49,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={mockData}>
+                <LineChart data={userData.footprintHistory}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
@@ -52,9 +61,9 @@ const Index = () => {
               <div className="mt-4">
                 <h3 className="font-semibold">Suggestions for Improvement:</h3>
                 <ul className="list-disc list-inside">
-                  <li>Use public transportation more often</li>
-                  <li>Reduce meat consumption</li>
-                  <li>Switch to energy-efficient appliances</li>
+                  {userData.suggestions.map((suggestion, index) => (
+                    <li key={index}>{suggestion}</li>
+                  ))}
                 </ul>
               </div>
             </CardContent>
@@ -67,8 +76,34 @@ const Index = () => {
               <CardDescription>Record your transportation, energy use, and food habits</CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Activity logging form will be implemented here</p>
-              <Button className="mt-4">Log Activity</Button>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                handleLogActivity(Object.fromEntries(formData));
+              }} className="space-y-4">
+                <div>
+                  <Label htmlFor="activity-type">Activity Type</Label>
+                  <Select>
+                    <SelectTrigger id="activity-type">
+                      <SelectValue placeholder="Select activity type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="transportation">Transportation</SelectItem>
+                      <SelectItem value="energy">Energy Use</SelectItem>
+                      <SelectItem value="food">Food Consumption</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="activity-details">Activity Details</Label>
+                  <Input id="activity-details" placeholder="e.g., 10 miles by car" />
+                </div>
+                <div>
+                  <Label htmlFor="date">Date</Label>
+                  <Input id="date" type="date" />
+                </div>
+                <Button type="submit">Log Activity</Button>
+              </form>
             </CardContent>
           </Card>
         </TabsContent>
@@ -79,7 +114,20 @@ const Index = () => {
               <CardDescription>See how you compare to your friends</CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Social comparison features will be implemented here</p>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold">Your Ranking</h3>
+                  <p>You are in the top {socialData.percentile}% of eco-friendly users!</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold">Leaderboard</h3>
+                  <ul className="list-disc list-inside">
+                    {socialData.leaderboard.map((user, index) => (
+                      <li key={index}>{user.name}: {user.score} points</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -90,7 +138,17 @@ const Index = () => {
               <CardDescription>Participate in challenges to reduce your carbon footprint</CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Eco-friendly challenges will be listed here</p>
+              <ul className="space-y-4">
+                {challengesData.map((challenge, index) => (
+                  <li key={index} className="border p-4 rounded-md">
+                    <h3 className="font-semibold">{challenge.title}</h3>
+                    <p>{challenge.description}</p>
+                    <Button className="mt-2" onClick={() => handleJoinChallenge(challenge.id)}>
+                      Join Challenge
+                    </Button>
+                  </li>
+                ))}
+              </ul>
             </CardContent>
           </Card>
         </TabsContent>
