@@ -34,12 +34,12 @@ const Index = () => {
         <p className="text-xl text-gray-600">Monitor and reduce your carbon footprint</p>
       </header>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-4xl mx-auto">
+      <Tabs defaultValue={activeTab} className="max-w-4xl mx-auto">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="log">Log Activity</TabsTrigger>
-          <TabsTrigger value="social">Social</TabsTrigger>
-          <TabsTrigger value="challenges">Challenges</TabsTrigger>
+          <TabsTrigger value="dashboard" onClick={() => setActiveTab("dashboard")}>Dashboard</TabsTrigger>
+          <TabsTrigger value="log" onClick={() => setActiveTab("log")}>Log Activity</TabsTrigger>
+          <TabsTrigger value="social" onClick={() => setActiveTab("social")}>Social</TabsTrigger>
+          <TabsTrigger value="challenges" onClick={() => setActiveTab("challenges")}>Challenges</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard">
           <Card>
