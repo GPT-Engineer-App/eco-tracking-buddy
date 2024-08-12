@@ -21,12 +21,12 @@ const Index = () => {
     logActivity.mutate(activityData);
   };
 
-  if (isUserDataLoading || isSocialDataLoading || isChallengesLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+      {(isUserDataLoading || isSocialDataLoading || isChallengesLoading) && (
+        <div className="text-center py-10">Loading...</div>
+      )}
+      {!isUserDataLoading && !isSocialDataLoading && !isChallengesLoading && (
       <header className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-green-600 flex items-center justify-center">
           <Leaf className="mr-2" /> EcoTracker
@@ -48,24 +48,28 @@ const Index = () => {
               <CardDescription>Track your progress over time</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={userData.footprintHistory}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="footprint" stroke="#82ca9d" />
-                </LineChart>
-              </ResponsiveContainer>
-              <div className="mt-4">
-                <h3 className="font-semibold">Suggestions for Improvement:</h3>
-                <ul className="list-disc list-inside">
-                  {userData.suggestions.map((suggestion, index) => (
-                    <li key={index}>{suggestion}</li>
-                  ))}
-                </ul>
-              </div>
+              {userData && userData.footprintHistory && (
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={userData.footprintHistory}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="footprint" stroke="#82ca9d" />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+              {userData && userData.suggestions && (
+                <div className="mt-4">
+                  <h3 className="font-semibold">Suggestions for Improvement:</h3>
+                  <ul className="list-disc list-inside">
+                    {userData.suggestions.map((suggestion, index) => (
+                      <li key={index}>{suggestion}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
