@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const Index = () => {
+  const [activeTab, setActiveTab] = useState("dashboard");
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Leaf } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -34,7 +37,7 @@ const Index = () => {
         <p className="text-xl text-gray-600">Monitor and reduce your carbon footprint</p>
       </header>
 
-      <Tabs defaultValue={activeTab} className="max-w-4xl mx-auto">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-4xl mx-auto">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="log">Log Activity</TabsTrigger>
